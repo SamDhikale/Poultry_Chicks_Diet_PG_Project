@@ -1,0 +1,1002 @@
+---
+output :
+   pdf_document 
+---
+
+\LARGE
+
+
+
+
+
+# INDEX
+
+|        Sr.No        |              Title                |       Page No.     |
+|---------------------|-----------------------------------|--------------------|  
+|                     |                                   |                    |
+|         1           | Introduction                      |          2         |
+|                     |                                   |                    |
+|         2           | Objectives                        |          2         |
+|                     |                                   |                    |
+|         3           | Design Of Experiment              |          3         |
+|                     |                                   |                    |
+|         4           | Exploratory Data Analysis         |          5         |
+|                     |                                   |                    |
+|         5           | ANOVA                             |         12         |
+|                     |                                   |                    |
+|         6           | Time Series Analysis              |         23         |
+|                     |                                   |                    |
+|         7           | MANOVA                            |         41         |
+|                     |                                   |                    |
+|         8           | Conclusion                        |         49         |
+|                     |                                   |                    |
+|         9           | Limitations                       |         50         |
+|                     |                                   |                    |
+|        10           | References                        |         51         |     
+|                     |                                   |                    |
+|        11           | Appendix                          |         52         |
+  
+\pagebreak
+\large
+# Introduction
+|          The main job of the Poultry owner is to grow Poultry chicks for a specific time period, for particular customers for the species they demanded, but over that time period growth of that species should be crossed the limit provided by that owner. For this, he was using different Diets arbitrarily, without knowing the impact of that Diet on different species. He was offered by different companies to use their Diet as they all claimed that “This Diet can be really helpful to gain a significant amount of growth for different poultry chick species”. He has to find only one diet that is really significant and helpful to cross certain growth thresholds provided by customers on those given days.  
+
+|          For this task, we will be helping him to find this Diet using Statistical techniques. We will also try to examine whether different diets are reacting differently for different Species, Gender or not? This will undoubtedly help him to manage his business in a more effective manner by avoiding extra work and costs caused by other Diets and factors. Also, it will help him to maintain a strong relationship with his customers as he will be more certain of their needs.  
+
+
+
+# Objectives  
+
+- Are different types of poultry diets help to gain the same Weight and Height.  
+
+- To find out whether different age groups of Chicks required different types of diets or not.  
+
+- To check whether the diet & gender have the same impact on the Height & weight of Chicks.  
+
+- To check whether the diet has the same impact on different species weight of Chicks.  
+
+- To check which type of diet is helpful for the healthy growth of chicks.  
+
+- To reduce the expenditure of Poultry Farm Owner and make Maximum profit.
+
+
+\pagebreak   
+# Design of Experiment  
+|        The design for this experiment was straightforward and simple. As an initial step, we selected 60 eggs from a lot of 200 eggs of 4 species in equal sample size (each of 15) using stratified random sampling by dividing the whole in the homogeneous groups according to 4 different species and then we selected the equal sample from each group.   
+
+|        After some days, when all eggs were hatched completely, we separately gave each group of chicks a different diet (4 different Diets for 4 groups) and continued that Diet for 24 days. For each day we measured their “Weight” and “Height”. For this study, we also considered factors like the gender of that particular chick and their use in the future (for egg-laying or meat).  
+
+
+
+# Types Of Diets:
+
+|               Diet                          |         Code           |
+| ------------------------------------------- | ---------------------- |
+|     Proteins + vitamins                     |        Diet 1          |
+|     proteins + carbohydrates                |        Diet 2          |
+|     Vitamins + minerals + Proteins          |        Diet 3          |
+|     Fatty Acids + minerals + carbohydrates  |        Diet 4          |
+
+
+  
+  
+ 
+
+# Types Of Species:
+
+|         Species           |          Code           |
+| ------------------------- | ----------------------- |
+|       Pure Breed          |           PB            |
+|       Hybrid Chicken      |           HC            |
+|       Bantam Chicken      |           BC            |
+|       Boiler              |           BR            |
+
+
+\pagebreak                      
+   
+![Design of Experiment layout]("C:/Users/Admin/Desktop/MSC_Project/Poultry_New/Docs/doe.png")
+
+\pagebreak
+
+# Exploratory Data Analysis  
+|     A glimpse of some first rows of data……  
+
+```{r, warning=FALSE,warning=FALSE,message=FALSE,echo=FALSE}
+library(tidyverse)
+wt_ht<- read.csv('C:/Users/Admin/Desktop/MSC_Project/Poultry_New/New folder/Updated17-3.csv')
+wt_ht <- tibble(wt_ht)
+head(wt_ht)
+```
+## Summary
+
+```{r,warnings = FALSE, echo=FALSE}
+summary(wt_ht)
+```
+
+## 1)Scatter plot of Weight/Height Versus Day  
+
+```{r echo=FALSE, fig.height=5, fig.width=10, message=FALSE, warning=FALSE}
+library(gridExtra)
+wt_ht <- wt_ht[complete.cases(wt_ht),]
+wt <- ggplot(wt_ht,mapping = aes(x = Day, y = weight)) + geom_point() + labs(y = "Weight of poultry chicks in KG", x = "Day (fig 1)",title = "Scatter plot of Weight Versus Day")
+ht <- ggplot(wt_ht,mapping = aes(x = Day, y = height)) + geom_point() + labs(y = "Height of poultry chicks in Inches", x = "Day (fig 2)",title = "Scatter plot of Height Versus Day")
+grid.arrange(wt,ht,ncol = 2)
+```
+
+|       From fig 1 *(weight VS day)*, It appears that all poultry chicks were initially nearly of the same weight, but eventually, after days passed there is a *noticeable* variation in the weight of chicks. While In fig 2 *(height VS day)* it appears that, there is observable *fluctuation* in height from starting days.  
+
+## 2)Scatter plot of Weight/Height Versus Day along species
+```{r,warning=FALSE, fig.width=10, fig.height=5,message=FALSE,echo=FALSE}
+wt <- ggplot(wt_ht,mapping = aes(x = Day, y = weight,color = species)) + geom_point(position = "Jitter",alpha = 0.5) + labs(y = "Weight of poultry chicks in KG", x = "Day (fig 3)",title = "Scatter plot of Weight Versus Day along species")
+ht <- ggplot(wt_ht,mapping = aes(x = Day, y = height,color = species)) + geom_point(position = "jitter",alpha = 0.5) + labs(y = "Height of poultry chicks in Inches", x = "Day (fig 4)",title = "Scatter plot of Height Versus Day along species")
+grid.arrange(wt,ht,ncol = 2)
+```
+
+|       It appears that *weights* and *heights* are completely random,so we can say that **weights and heights are not that much dependent on species**.  
+## 3)Scatter plot of Weight/Height Versus Day acoording to gender
+```{r,warning=FALSE, fig.width=10, fig.height=4,warning=FALSE,message=FALSE,echo=FALSE}
+wt <- ggplot(wt_ht,mapping = aes(x = Day, y = weight,color = gender)) + geom_point(position = "Jitter",alpha = 0.5) + labs(y = "Weight of poultry chicks in KG", x = "Day (fig 5)",title = "Scatter plot of Weight Versus Day")
+ht <- ggplot(wt_ht,mapping = aes(x = Day, y = height,color = gender)) + geom_point(position = "jitter",alpha = 0.5) + labs(y = "Height of poultry chicks in Inches", x = "Day (fig 6)",title = "Scatter plot of Height Versus Day")
+grid.arrange(wt,ht,ncol = 2)
+```
+
+|       It appears that *female* chicks are gaining more *weight* and *height* as compared to male chicks over days. 
+## 4)Scatter plot of Weight/Height Versus Day According to Diet  
+
+```{r,warning = FALSE, fig.width=10, fig.height=5,message=FALSE,echo=FALSE}
+wt <- ggplot(wt_ht,mapping = aes(x = Day, y = weight,color = as.character(Diet))) + geom_point(position =  "jitter", alpha = 0.6) + labs(y = "Weight of poultry chicks in KG", x = "Day (fig 7)",title = "Scatter plot of Weight Versus Day", colour = "Diet")
+ht <- ggplot(wt_ht,mapping = aes(x = Day, y = height,color = as.character(Diet))) + geom_point(position = "Jitter",alpha = 0.6) + labs(y = "Height of poultry chicks in Inches", x = "Day (fig 8)",title = "Scatter plot of Height Versus Day",colour = "Diet")
+grid.arrange(wt,ht,ncol = 2)
+```
+
+|       We see that each diet follows a *specified* pattern in gaining weight and height over days.*Diet 3* was in hiding for the first some days in gaining weight but after few days it starts to show dominance over others. While *Diet 4* was focused for the first days but it become weak in a sense as compared to other others afterward. It looks like *Diet 1* and *Diet 2* are helping to gain weight and height of chicks in some consistent form.  
+
+
+## 5)Scatter plot of Weight/Height Versus Day According to Diet factor by species
+```{r,warning = FALSE, fig.width=12, fig.height=7,echo=FALSE,message=FALSE}
+wt <- ggplot(wt_ht,mapping = aes(x = Day, y = weight,color = as.character(Diet))) + geom_point(position =  "jitter", alpha = 0.6) + labs(y = "Weight of poultry chicks in KG", x = "Day (fig 9)",title = "Scatter plot of Weight Versus Day", colour = "Diet") + facet_grid(species ~ . )
+ht <- ggplot(wt_ht,mapping = aes(x = Day, y = height,color = as.character(Diet))) + geom_point(position = "Jitter",alpha = 0.6) + labs(y = "Height of poultry chicks in Inches", x = "Day (fig 10)",title = "Scatter plot of Height Versus Day",colour = "Diet") + facet_grid(species ~ .)
+grid.arrange(wt,ht,ncol = 2)
+```
+  
+|       Here we see that each Species is supporting each diet in a positive way, but *diet 3* is more focused on all the species. *Diet 4* considerably helps species in gaining weight but it is slow and non-accountable as compared to other *Diets*.  
+
+## 6) Scatter plot of Weight/Height Versus Day According to species factor by Diet
+```{r,warning = FALSE, fig.width=12, fig.height=5,message=FALSE,echo=FALSE}
+wt <- ggplot(wt_ht,mapping = aes(x = Day, y = weight,color = species)) + geom_point(position =  "jitter", alpha = 0.6) + labs(y = "Weight of poultry chicks in KG", x = "Day (fig 11)",title = "Scatter plot of Weight Versus Day") + facet_grid(Diet ~ . )
+ht <- ggplot(wt_ht,mapping = aes(x = Day, y = height,color = species)) + geom_point(position = "Jitter",alpha = 0.6) + labs(y = "Height of poultry chicks in Inches", x = "Day (fig 12)",title = "Scatter plot of Height Versus Day") + facet_grid(Diet ~ .)
+grid.arrange(wt,ht,ncol = 2)
+```
+
+|      From the above scatter plot of *Weight Vs Day* & *Height Vs Day* along with Diet and categorized by species, It appears that each diet dependency of species on the overall growth of chicks is completely random or we can say that it is independent over species. 
+
+## 7)Scatter plot of Height/Weight Versus Day grid by species type
+```{r,warning=FALSE,fig.align="center",fig.width=14,fig.height=5,message=FALSE,echo=FALSE}
+wt <- ggplot(wt_ht,mapping = aes(x = Day, y = weight,color = species)) + geom_point(position =  "jitter", alpha = 0.6) + labs(y = "Weight of poultry chicks in KG ", x = "Day (fig 13)",title = "Scatter plot of Weight Versus Day grid by species type") + facet_grid(type ~ . )
+ht <- ggplot(wt_ht,mapping = aes(x = Day, y = height,color = species)) + geom_point(position = "Jitter",alpha = 0.6) + labs(y = "Height of poultry chicks in Inches ", x = "Day (fig 14)",title = "Scatter plot of Height Versus Day grid by species type") + facet_grid(type ~ .)
+grid.arrange(wt,ht,ncol = 2)
+```
+
+|      The species which are to be used for *food* purpose, those adapting *Diet* quickly and gaining weight by imitating least variability.  
+
+## 8)Bubble plot of Weight Vs Height categorized by diet
+```{r,warning=FALSE,fig.align="center",fig.width=10,message=FALSE,echo=FALSE}  
+ggplot(data = wt_ht,mapping = aes(x = weight, y = height,size = Day, color = as.character(Diet))) + geom_point(alpha = 0.7,position = "jitter") + scale_size(range = c( 0.1 , 8)) + labs(y = "Height", x = "Weight",title = "Bubble plot of Weight Vs Height categorized by diet",color = "Diet")
+```
+
+|      It now becomes more clear to visualize that *Diet 3* is effectively helping chicks to gain weight and height quickly with a small amount of variation, while *Diet 4* is not that effective compared to others.
+
+## 9)Bubble plot of Weight Vs Height categorized by species
+```{r,warning=FALSE,fig.align="center",fig.width=10,message=FALSE,echo=FALSE}
+ggplot(data = wt_ht,mapping = aes(x = weight, y = height,size = Day, color = species)) + geom_point(alpha = 0.7,position = "jitter") + scale_size(range = c( 0.1 , 8)) + labs(y = "Height", x = "Weight",title = "Bubble plot of Weight Vs Height categorized by species",color = "Species")
+```
+|       *Specie PB* is showing the least variation compared to others, It looks like it is growing only in upper phase(purple bubble), it is not affected by different Diets. Like all the diets it grows in the same way. While Others are showing more variation over time, which may show that this variation is introduced by different Diets.
+
+## 10)Bubble Plot of Mean weight vs Mean height over days categorised by species.  
+
+
+```{r,warning=FALSE,fig.align="center",fig.width=10,message=FALSE,echo=FALSE}  
+temp <- wt_ht %>% select(species, Diet, Day, weight, height) %>% group_by(species, Day) %>% summarize(mean_wt = mean(weight,na.rm = TRUE),mean_ht = mean(height,na.rm = TRUE))
+ggplot(data = temp) + geom_point(mapping = aes(x = mean_wt, y = mean_ht,color = species,size = Day),alpha = 0.5,position = "jitter") + scale_size(range = c( 0.1 , 8)) +labs(x = "Mean Weight over days",y = "Mean Height over days", title = "Mean weight vs Mean height over days categorised species")
+```
+
+|          This plot shows how *mean weight* and *mean height* are changing over days, Here it appears that the mean weight and mean height of *specie PB* is gaining more mean weight over days as compared to others.
+
+## 11)Bubble Plot of Mean weight vs Mean height over days categorised by Diet.  
+
+```{r,warning=FALSE,fig.align="center",fig.width=10,message=FALSE,echo=FALSE}  
+temp <- wt_ht %>% select(species, Diet, Day, weight, height) %>% group_by(Diet, Day) %>% summarize(mean_wt = mean(weight,na.rm = TRUE),mean_ht = mean(height,na.rm = TRUE))
+ggplot(data = temp) + geom_point(mapping = aes(x = mean_wt, y = mean_ht,color = as.factor(Diet),size = Day),alpha = 0.5) + scale_size(range = c( 0.1 , 8)) +labs(x = "Mean Weight over days",y = "Mean Height over days", title = "Mean weight vs Mean height over days categorised by Diet")
+```
+|          This plot shows how *mean weight* and *mean height* are changing over days, Here it appears that *Diet 3 * is Supporting to each species to gain weight & height over days in rapid manner as compared to other diets.
+
+\pagebreak
+
+# ANOVA
+\large
+## Analysis of variance For mean weight over Diet's  
+
+A glimpse of the first rows of data...
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+library(tidyverse)
+data <- read.csv("C:/Users/Admin/Desktop/MSC_Project/Poultry_New/filter_treated.csv")
+data <- tibble(data)
+x <- rep(1:53,24)
+data <- data %>% mutate(re_index = x) %>%   
+        select(re_index,species,gender,type,Diet,Day,weight,height)
+grp_dt <- data %>% select(species,Diet,re_index,weight)
+dt_ht <- data %>% select(species,Diet,re_index,height)
+grp_dt <- grp_dt %>% group_by(re_index,Diet) %>% summarise(mean_weight = mean(weight))
+grp_dt1 <- grp_dt %>% spread(Diet,mean_weight)
+diet1 <- grp_dt1$`1`
+diet2 <- grp_dt1$`2`
+diet3 <- grp_dt1$`3`
+diet4 <- grp_dt1$`4`
+diet1 <- c(diet1[complete.cases(diet1)],0)
+diet2 <- c(diet2[complete.cases(diet2)],0)
+diet3 <- c(diet3[complete.cases(diet3)],0)
+diet4 <- diet4[complete.cases(diet4)]
+grp_dt1 <- cbind(diet1,diet2,diet3,diet4)
+head(grp_dt1)
+```
+
+|    The above data is summarized in such a way that each observation is mean weight gain by specific chick assigned to that diet over 24 days.  
+
+```{r,echo=FALSE}
+group_by(grp_dt, Diet) %>%
+        summarise(
+                count = n(),
+                mean = mean(mean_weight, na.rm = TRUE),
+                sd = sd(mean_weight, na.rm = TRUE)
+        )
+```
+
+|    The above table gives a basic summary of the mean and the standard deviation for a particular Diet. By looking at it, we see that the mean weight gain by diet 3 is greater than the other diets, but the variation from the mean value is still big than the other diets.
+|     To build ANOVA we first need to verify the assumption of normality of data and homogeneity of variance among groups.  
+## ANOVA Assumptions :  
+- Each group sample is drawn from a normally distributed population.  
+- All populations have a common variance (Homogeneity of variances).  
+- All samples are drawn independently of each other.  
+- Within each sample, the observations are sampled randomly and independently of each other.  
+
+\pagebreak 
+
+### ANOVA  
+```{r,echo=FALSE}
+fit <- with(grp_dt,aov(mean_weight~factor(Diet)))
+print(fit)
+print(summary(fit))
+```
+
+
+|   The Above is for fitted simple ANOVA model **mean_weight ~ factor(Diet)**. P-value shows results in favor of the alternative hypothesis, stated as mean weight for at least one diet is significantly different than others.  
+
+### Assessing model assumptions  
+|      In one way ANOVA, the dependent variable is assumed to be normally distributed and have equal variance in each group. We can use residuals to verify these assumptions.  
+```{r,echo=FALSE,fig.align="center",fig.width=10,fig.height =8,message=FALSE,echo=FALSE}
+par(mfrow = c(2,2))
+plot(fit)
+par(mfrow = c(1,1))
+```
+  
+|    The diagnostic plots show the unexplained variance (residuals) across the range of the observed data.  
+Each plot gives a specific piece of information about the model fit, but it’s important to know that the red line representing the mean of the residuals should be horizontal and centered on zero (or on one, in the `scale-location plot`), meaning that there are no large outliers that would cause bias in the model.  
+
+The `Normal Q-Q plot` plots a regression between the theoretical residuals of perfectly-homoscedastic model and the actual residuals of your model, so the closer to a slope of 1 this is the better. This Q-Q plot is very close, with only a bit of deviation.  
+From these diagnostic plots we can say that the model fits the assumption of homoscedasticity.  
+i.e. to say the fitted model is apropriate and valid and so as results given by it.  
+To be more certain about this conclusions we can perform `Shapiro-Wilks` test and `Levene's Homogeneity` test, to verify the assumptions of normality and homogeneity of observations among the Diets group. 
+
+\pagebreak
+
+```{r,fig.align="center",fig.width=10,fig.height=8,message=FALSE,echo=FALSE}
+#Assumptions
+library(onewaytests)
+nor.test(mean_weight~factor(Diet),data=grp_dt)#normality
+```
+
+|      First table gives the summary of the *Shapiro Wilks* test for each group, from p-value we see that the data for each group is normality distributed. The same is interpreted graphically.
+
+\pagebreak
+  
+```{r,message=FALSE,warning=FALSE,echo=FALSE}
+homog.test(mean_weight~factor(Diet),data=grp_dt)#homogeneity
+```  
+  
+|      The above output is generated by *Levene's Homogeneity Test* (alpha = 0.05).This shows that variance among groups is homogeneous.  
+### Mean weight plot for Diet's
+```{r,warning=FALSE,message=FALSE,echo=FALSE, fig.align='left'}
+library(gplots)
+plotmeans(grp_dt$mean_weight ~ grp_dt$Diet,xlab = "Diets", ylab = "Mean Weight",main = "Mean weight plot with 95% CI")
+```
+
+|    This plot shows the treatment means, with 95% confidence limits, which clearly allows seeing these treatment differences.Also mean weight for **diet 3** is quite high from the other diets and for **diet 4** is quite low from the others.  
+
+### Multiple comparisons  
+|   The ANOVA F test tells us that the mean weight gain by four Diets aren't equally effective, but it unable us to tell about which treatment differ from another. We can use multiple comparison procedure to answer this question.
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+# Tukey multiple comparisons
+# H0 :  two means are equal
+library(multcomp)
+TukeyHSD(fit)
+par(las = 2)
+par(mar = c(5,8,4,2))
+plot(TukeyHSD(fit))
+```
+|       From the output generated by *Tukey multiple comparisons of means* we see that the mean weight for each pair group is significantly different. The same can be interpreted from the graph, Confidence intervals that include 0 indicate treatments that aren't significantly different.
+
+# Analysis of variance For mean Height over Diet's  
+A glimpse of the first rows of data...
+```{r,message=FALSE,warning=FALSE,echo=FALSE}
+dt_ht <- dt_ht %>% group_by(re_index, Diet) %>% summarise(mean_height = mean(height))
+grp_dt1 <-dt_ht %>% spread(Diet,mean_height)  
+diet1 <- grp_dt1$`1`
+diet2 <- grp_dt1$`2`
+diet3 <- grp_dt1$`3`
+diet4 <- grp_dt1$`4`
+diet1 <- c(diet1[complete.cases(diet1)],0)
+diet2 <- c(diet2[complete.cases(diet2)],0)
+diet3 <- c(diet3[complete.cases(diet3)],0)
+diet4 <- diet4[complete.cases(diet4)]
+grp_dt1 <- cbind(diet1,diet2,diet3,diet4)
+head(grp_dt1)
+```
+
+|    The above data is summarized in such a way that each observation is mean height gain by specific chick assigned to that diet over 24 days.  
+
+```{r,echo=FALSE}
+# Basic_Summary
+
+group_by(dt_ht, Diet) %>%
+        summarise(
+                count = n(),
+                mean = mean(mean_height, na.rm = TRUE),
+                sd = sd(mean_height, na.rm = TRUE)
+        )
+```
+|    The above table gives a basic summary of the mean and the standard deviation for a particular Diet. By looking at it, we see that the mean weight gain by diet 3 is greater than the other diets. 
+### ANOVA  
+```{r,echo=FALSE}
+fit <- with(dt_ht,aov(mean_height~factor(Diet)))
+print(fit)
+print(summary(fit))
+```
+
+|   The Above is for fitted simple ANOVA model **mean_height ~ factor(Diet)**. P-value shows results in favor of the alternative hypothesis, stated as mean height for at least one diet is significantly different than others. 
+### Assessing model assumptions  
+ 
+```{r,echo=FALSE,fig.align="center",fig.width=10,fig.height=8,message=FALSE}
+par(mfrow = c(2,2))
+plot(fit)
+par(mfrow = c(1,1))
+```
+
+|    The diagnostic plots show the unexplained variance (residuals) across the range of the observed data.  
+The red line representing the mean of the residuals is horizontal and centered on zero but for `scale location` plot it is showing an ups and downs, meaning that there are outliers that would cause bias in the model.  
+Also the `Normal Q-Q` plot for residuals indicating the violation of normality assumption of residuals.  
+To be more certain about this conclusions we can perform `Shapiro-Wilks` test and `Levene's Homogeneity` test, to verify the assumptions of normality and homogeneity of observations among the Diets group. 
+
+```{r,echo=FALSE,fig.align="center",fig.width=10,fig.height=8,message=FALSE}
+#Assumptions
+library(onewaytests)
+nor.test(mean_height~factor(Diet),data=dt_ht) #normality
+```
+
+|      The normality Assumption for some groups of Diets is violating So the constant variance. This can be seen by the output generated by *Levene's Homogeneity Test (alpha = 0.05)* as follows.
+
+\pagebreak
+```{r,echo=FALSE}
+homog.test(mean_height~factor(Diet),data=dt_ht) #homogeneity
+```
+|    As the Assumptions made by Anova are not satisfied, the interpretation given by this model will not be appropriate.  
+We will use `Kruskall-Wallis test` to perform this ANOVA in non paramteric way..  
+
+### Non parametric ANOVA(Kruskal Wallis test)
+|   Kruskal-Wallis test, proposed by Kruskal and Wallis in 1952, is a nonparametric method for testing whether samples are originated from the same distribution.The null hypothesis of the Kruskal-Wallis test is that the mean ranks of the groups are the same. As the nonparametric equivalent one-way ANOVA, Kruskal-Wallis test is called one-way ANOVA on ranks. Unlike the analogous one-way ANOVA, the nonparametric Kruskal-Wallis test does not assume a normal distribution of the underlying data.  
+
+```{r,echo=FALSE}
+fit1 <- kruskal.test(mean_height~factor(Diet),data=dt_ht)
+summary(fit)
+```
+
+|     From the output generated by above test we see that the mean height for different *Diets* is significantly Different from each other.
+### Mean Height Plot for Diets  
+
+```{r,,fig.align="center",fig.width=10,fig.height=6,message=FALSE,echo=FALSE}
+library(gplots)
+plotmeans(mean_height~factor(Diet),data=dt_ht,xlab = "Diets",ylab = "Mean Height")
+```
+
+|    This plot shows the treatment means, with 95% confidence limits, which clearly allows seeing these treatment differences.Also mean height for **diet 3** is quite high from the other diets and for **diet 4** and **diet 2** is quite low from the others.  
+
+### NonParametric Multiple Comparison  
+**Pairwise comparisons using Wilcoxon rank sum exact test **
+```{r,echo=FALSE}
+pairwise.wilcox.test(dt_ht$mean_height, g = factor(dt_ht$Diet))
+```
+
+|     The p-value for pair of groups *2-3* and *3-4* is nearly zero indicating that, the mean height for those treatment combinations are differ significantly.  
+
+\pagebreak
+# Time Series Analysis:
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+set.seed(1000)
+library(tidyverse)
+data <- read.csv("C:/Users/Admin/Desktop/MSC_Project/Poultry_New/filter_treated.csv")
+data <- tibble(data)
+x <- rep(1:53,24)
+data <- data %>% mutate(re_index = x)# %>% select(re_index,species,gender,type,Diet,Day,weight,height)
+data <- data[,c(9,2,3,4,5,6,7,8)]
+ 
+```
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+dt <- data[,c(6,5,7)]
+tsr <- dt %>%  #data %>% select(Day,Diet,weight) %>% 
+        group_by(Diet,Day) %>% 
+        summarise(mean_wt = mean(weight))
+tsr <- tsr %>% spread(Diet,mean_wt)
+```
+  
+|     To construct a time series we gathered data in a such that each tuple(row) summarizes the mean weight of a respective group of a particular diet for a given day. There will be four-time series for respective diets over 24 days containing mean weight chicks for that particular day.  
+
+```{r, fig.height=10,fig.width=14, echo=FALSE}
+t1 <- ts(tsr$`1`,start=1,end=24)
+t2 <- ts(tsr$`2`,start=1,end=24)
+t3 <- ts(tsr$`3`,start=1,end=24)
+t4 <- ts(tsr$`4`,start=1,end=24)
+par(mfrow = c(2,2))
+plot(t1,ylab = "Diet 1",xlab = "Day")
+plot(t2,ylab = "Diet 2",xlab = "Day")
+plot(t3,ylab = "Diet 3",xlab = "Day")
+plot(t4,ylab = "Diet 4",xlab = "Day")
+```
+  
+|        The above plots show time series plots over 24 days for respective *Diet*. At first glance, they all are looking the same, but note the difference in *y scale* *mean_weight*. It is quite different for each diet, which explores *the rate of growth* of chicks for different diets.  
+
+|       We see that only *trend* and some *irregular variation* are present in data, which can be generalized by *Double Exponential time* series model.  
+
+## Model 1 For Diet 1:  
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+plot(t1)
+library(forecast)
+fit <- ets(t1,model = "AAN") ## AAN : 1)Irregular : additive 2)trend : Additive 3)seasonal : Null
+fit
+#model
+#A three-letter code indicating the model to be estimated using the ETS classification and  
+#notation. The possible inputs are “N” for none, “A” for additive, “M” for multiplicative, or “Z”  
+#for automatic selection. If any of the inputs is left as “Z”, then this component is selected  
+#according to the information criterion. The default value of ZZZ ensures that all components are  
+#selected using the information criterion.  
+
+```
+$Y_t$ = $slope$`*`$t$ + $irregular$  
+$Y_t$ = $0.8669$`*`$t$ + $0.9999$  
+
+|     Holt’s two parameter exponential smoothing method is an extension of simple exponential smoothing. It adds a growth factor (or trend factor) to the smoothing equation as a way of adjusting for the trend.  
+From output....  
+
+**`alpha`** : Smoothing constant for data. alpha equal 0 sets the current smoothed point to the previous smoothed value and alpha equal 1 sets the current smoothed point to the current point (i.e., the smoothed series is the original series).Here alpha is nearly 1, which will give more weight to current values.  
+
+**`beta`** : Smoothing constant for trend estimate.This numeric value, between 0 and 1, controls the trend calculation. A smaller value considers longer-term trend and a larger value focus on shorter-term trend.beta value 0.8669 means model will focus on shorter term trend.  
+
+### Checking Model Adequacy  
+
+```{r,fig.width=8, warning=FALSE, echo=FALSE, message=FALSE, fig.height=6}
+par(mfrow = c(2,1))
+Acf(fit$residuals);Pacf(fit$residuals)
+```
+
+|       From the above plot of `autocorrelation` and `Partial autocorrelation` plot, we see that residuals for all lags are lies within the significance band, indicating that the fitted model is suitable for given data.  
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(car)
+qqPlot(fit$residuals)
+```
+  
+|       The above plot checks the `normality` assumption of residuals generated by fitted model.Clearly residuals are in straight line,Which shows that they are normal.Which can be further verified by `Anderson darling test`.  
+
+|       The Null Hypothesis for this test is that the residuals generated by the fitted model are normally distributed.  
+
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(nortest)
+ad.test(fit$residuals)
+```
+  
+|     `P value` generated by the above test is greater than 0.05 which shows, residuals are normal.  
+
+\pagebreak
+`Box-Ljung test for no auto-correlation`  
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(stats)
+Box.test(fit$residuals,type = "Ljung-Box")#H0: autocorrelation don't differ from zero
+
+```
+|      The null hypothesis of the Box Ljung Test, $H_o$, is that our model does not show lack of fit (or in simple terms—the model is just fine with no auto-correlation in residuals given by fitted model). The alternate hypothesis, $H_1$, is just that the model does show a lack of fit. A significant p-value in this test rejects the null hypothesis that the time series isn't auto-correlated. P value for above test is greater than L.O.S So the fitted model does not show lack of fit.  
+
+## Five Day Ahead forecast of Mean Weight For Diet.  
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+prediction <- forecast(fit,5)
+prediction
+```
+  
+|        The above table shows five days ahead forecast and confidence `80%` and `95%` intervals for the generated forecast.  
+
+|    Predicted forecast on time series ....  
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.align='default', fig.height=3}
+plot(prediction)
+```
+
+## Comparison of Forecasted Values With Observed Values.
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.align='default', fig.height=5}
+t <- ts(t1[1:20],start = 1,end = 20)
+t_ <- t1[21:24]
+fit <- ets(t,model = "AAN")
+predictions <- forecast(fit,4)
+par(mfrow = c(1,2))
+plot(t1);plot(predictions)
+par(mfrow = c(1,1))
+diff <- t_ - predictions$mean
+df <- data.frame("Actual" = t_, "Predicted" = predictions$mean, "Difference" = diff)
+df
+```  
+  
+|     The above graph and differenced values (Actual - Predicted) for the last four observations are nearly similar, implying that forecasted values based on the time series model constructed with all observations are reliable and trustworthy.  
+
+
+The following models are the same as the above model, and interpretations are also similar. 
+
+
+
+# Model 2 For Diet 2:  
+```{r, warning=FALSE, echo=FALSE, message=FALSE,fig.align="center",fig.width=8,fig.height=5}
+plot(t2)
+fit <- ets(t2,model = "AAN")
+fit
+```
+
+|    The double exponential model for given data is.....  
+
+$Y_t$ = $slope$`*`$t$ + $irregular$  
+$Y_t$ = $0.9994$`*`$t$ + $0.9999$  
+\pagebreak 
+```{r,fig.width=8, warning=FALSE, echo=FALSE, message=FALSE, fig.height= 9}
+par(mfrow = c(2,1))
+Acf(fit$residuals)
+Pacf(fit$residuals)
+```  
+
+|    The above plot shows that, fitted model is adequate as there is no autocorrelation and partial autocorrelation in the residuals of fitted model.  
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(car)
+#qqPlot(fit$residuals)
+library(nortest)
+ad.test(fit$residuals)
+library(stats)
+Box.test(fit$residuals,type = "Ljung-Box")#H0: autocorrelation don't differ from zero
+
+```
+|    The above test shows residuals by fitted model are normally distributed.  
+# Five day ahead forecast  
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=6, fig.width=8}
+prediction <- forecast(fit,5)
+plot(prediction)
+
+```
+
+### Comparison of Forecasted Values With Observed Values.
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.align='default', fig.height=5}
+t <- ts(t2[1:20],start = 1,end = 20)
+t_ <- t2[21:24]
+fit <- ets(t,model = "AAN")
+predictions <- forecast(fit,4)
+par(mfrow = c(1,2))
+plot(t2);plot(predictions)
+par(mfrow = c(1,1))
+diff <- t_ - predictions$mean
+df <- data.frame("Actual" = t_, "Predicted" = predictions$mean, "Difference" = diff)
+df
+```
+  
+|     The above graph and differenced values (Actual - Predicted) for the last four observations are nearly similar, implying that forecasted values based on the time series model constructed with all observations are reliable and trustworthy.  
+
+# Model 3 For Diet 3  
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+plot(t3)
+fit <- ets(t3,model = "AAN")
+fit
+
+```
+|    Fitted double exponential model for given data is..
+Yt = slope*t + irregular : Yt = 0.9999*t + 0.9999
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE,fig.width=8, fig.height=9}
+par(mfrow = c(2,1))
+Acf(fit$residuals)
+Pacf(fit$residuals)
+
+```
+
+|     Above plot shows that there is no autocorrelation and partial autocorrelation in the residuals generated by given model.  
+\pagebreak
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(car)
+#qqPlot(fit$residuals)
+library(nortest)
+ad.test(fit$residuals)
+library(stats)
+Box.test(fit$residuals,type = "Ljung-Box")#H0: autocorrelation don't differ from zero
+
+```
+|     Above test shows the residuals by fitted model are normally distributed.   
+# Five day ahead forecast
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=6,fig.width=8}
+prediction <- forecast(fit,5)
+plot(prediction)
+
+```
+  
+
+### Comparison of Forecasted Values With Observed Values.
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.align='default', fig.height=6}
+t <- ts(t3[1:20],start = 1,end = 20)
+t_ <- t3[21:24]
+fit <- ets(t,model = "AAN")
+predictions <- forecast(fit,4)
+par(mfrow = c(1,2))
+plot(t3);plot(predictions)
+par(mfrow = c(1,1))
+diff <- t_ - predictions$mean
+df <- data.frame("Actual" = t_, "Predicted" = predictions$mean, "Difference" = diff)
+df
+```  
+  
+|    The above graph and the Actual & Predicted values for the last four observations are nearly similar, implying that forecasted values based on the time series model constructed with all observations are reliable and trustworthy.  
+
+# Model 4 For Diet 4
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=4}
+plot(t4)
+
+```
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+
+fit <- ets(t4,model = "AAN")
+fit
+
+```
+|    Fitted double exponential time series model is...   
+
+Yt = slope*t + irregular : Yt = 0.9999*t + 0.8777  
+
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE,fig.width=8, fig.height=10}
+par(mfrow = c(2,1))
+Acf(fit$residuals)
+Pacf(fit$residuals)
+
+```  
+
+|     From the above plot we see that there is no auto correlation and partial autocorrelation in residuals generated by fitted model...  
+\pagebreak
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(car)
+#qqPlot(fit$residuals)
+library(nortest)
+ad.test(fit$residuals)
+library(stats)
+Box.test(fit$residuals,type = "Ljung-Box")#H0: autocorrelation don't differ from zero
+
+```
+
+# Five day ahead forecast
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE,fig.height=6}
+prediction <- forecast(fit,5)
+plot(prediction)
+
+```
+
+
+
+### Comparison of Forecasted Values With Observed Values.
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.align='default', fig.height=5}
+t <- ts(t4[1:20],start = 1,end = 20)
+t_ <- t4[21:24]
+fit <- ets(t,model = "AAN")
+predictions <- forecast(fit,4)
+par(mfrow = c(1,2))
+plot(t4);plot(predictions)
+par(mfrow = c(1,1))
+diff <- t_ - predictions$mean
+df <- data.frame("Actual" = t_, "Predicted" = predictions$mean, "Difference" = diff)
+df
+```  
+  
+|     The above graph and differenced values (Actual - Predicted) for the last four observations are nearly similar, implying that forecasted values based on the time series model constructed with all observations are reliable and trustworthy.  
+
+
+`Same Procedure is constructed for other factors but it is not included in this report.`  
+
+
+
+
+
+\pagebreak
+
+# MANOVA (Multiple analysis of variance)  
+
+|       MANOVA is a technique which determines the effects of independent categorical variables on multiple continuous dependent variables. It is usually used to compare several groups with respect to multiple continuous variables.  
+
+|       The main distinction between MANOVA and ANOVA is that several dependent variables are considered in MANOVA. While ANOVA tests for inter-group differences between the mean values of one dependent variable, MANOVA tests for differences between centroid s - the vectors of the mean values of the dependent variables.  
+
+
+\large
+Glimpse of the first rows of data..
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+library(tidyverse)
+data <- read.csv("filter_treated.csv")
+data <- tibble(data)
+x <- rep(1:53,24)
+data <- data %>% mutate(re_index = x) #%>% select(re_index,Diet,weight,height)
+data <- data[,c(9,5,7,8)]
+data <- data %>% group_by(re_index,Diet) %>% summarise(weight = mean(weight),height = mean(height))
+head(data)
+```
+|       The above data shows mean weight and mean height of particular chick over 24 days, taking respective diet.  
+## Basic summary of data  
+```{r,warning=FALSE,message=FALSE,cache=FALSE}
+summary(data)
+```  
+\pagebreak
+## Checking preleminary assumptions
+* **MANOVA makes the following assumptions about the data:**
+
+* **Adequate sample size** (Rule of thumb):  
+
+|        The n in each cell > the number of outcome variables.  
+
+* **Independence of the observations**:  
+
+|        Each subject should belong to only one group. There is no relationship between the observations in each group. Having repeated measures for the same participants is not allowed. The selection of the sample should be completely random.  
+
+* **Absense of univariate or multivariate outliers**:  
+
+* **Multivariate normality**: The R function mshapiro_test( )[in the rstatix package] can be used to perform the Shapiro-Wilk test for multivariate normality.  
+
+* **Absence of multicollinearity**:  
+
+|     The dependent (outcome) variables cannot be too correlated to each other. No correlation should be above r = 0.90 [Tabachnick and Fidell (2012)}.
+* **Linearity** between all outcome variables for each group.  
+
+* **Homogeneity of variances** :  
+
+|            The Levene’s test can be used to test the equality of variances between groups. Non-significant values of Levene’s test indicate equal variance between groups.  
+
+* **Homogeneity of variance-covariance matrices** :  
+
+|       The Box’s M Test can be used to check the equality of covariance between the groups. This is the equivalent of a multivariate homogeneity of variance. This test is considered as highly sensitive. Therefore, significance for this test is determined at alpha = 0.001.  
+
+\pagebreak  
+
+## Identify univariate outliers
+### For mean weight
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+library(rstatix)
+data %>%
+        group_by(Diet) %>%
+        identify_outliers(weight)
+```
+### For mean height  
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+library(rstatix)
+data %>%
+        group_by(Diet) %>%
+        identify_outliers(height)
+```
+|        There are outliers in the data, but they are not extreme; so we will leave them as it is.  
+## Detecting Multivariate Outliers  
+|       Multivariate outliers are data points that have an unusual combination of values on the outcome (or dependent) variables.  
+
+|       In MANOVA setting, the Mahalanobis distance is generally used to detect multivariate outliers. The distance tells us how far an observation is from the center of the cloud, taking into account the shape (covariance) of the cloud as well.  
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+data %>%
+        group_by(Diet) %>%
+        mahalanobis_distance(-re_index) %>%
+        filter(is.outlier == TRUE) %>%
+        as.data.frame()
+```
+|      There were no multivariate outliers in the data, as assessed by Mahalanobis distance.  
+\pagebreak
+## Checking univariate normality assumptions  
+|    The normality assumption can be checked by computing Shapiro-Wilk test for each outcome variable at each level of the grouping variable. If the data is normally distributed, the p-value should be greater than 0.05.
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+data %>%
+        group_by(Diet) %>%
+        shapiro_test(weight,height) %>%
+        arrange(variable)
+```
+|     Height and Weight are nearly normally distributed for each Diets groups, as assessed by Shapiro-Wilk’s test (p nearly greater than 0.05).  
+```{r,warning=FALSE,message=FALSE,echo=FALSE,fig.width=8, fig.height=6} 
+library(ggpubr)
+# QQ plot of weight
+ggqqplot(data, "weight", facet.by = "Diet",
+         ylab = "weight", ggtheme = theme_bw())
+
+# QQ plot of height
+ggqqplot(data, "height", facet.by = "Diet",
+         ylab = "height", ggtheme = theme_bw())
+```
+      
+|    All the points fall approximately along the reference line, for each group. So we can assume normality of the data.  
+
+## Checking Multivariate Normality  
+|     Response variables are multivariate normally distributed within each group of the factor variable(s).  
+Fortunately, it’s well-known that MANOVA is robust against departures from multivariate normality so small to moderate departures typically don’t cause any problems.  
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+data[,c("weight","height")] %>%
+        mshapiro_test()
+```
+
+|   *Multivariate shapiro test* shows that the weight and height are Bivariate normally distributed for each factor(Diet).  
+
+## To check Multicollinearity  
+|    Ideally the correlation between the outcome variables should be moderate, not too high. A correlation above 0.9 is an indication of multicollinearity, which is problematic for MANOVA.  
+
+In other hand, if the correlation is too low, you should consider running separate one-way ANOVA for each outcome variable.  
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+#multicollinearity test
+data[,c("weight","height")] %>% cor_test(weight,height)
+```
+|        Null hypothesis for this test is, there no effect of the explanator. From above result we see that, There is moderate multicollinearity, as assessed by Pearson correlation and sample correlation coefficient. 
+
+## Homogeneity of covariance
+|     This can be evaluated using the *Box's M-test* implemented in the rstatix package. The *null hypothesis* for this test is that the observed covariance matrices for the dependent variables are equal across groups.  
+|    The condition in which multiple groups in an experimental design have the same covariance matrix. A basic assumption in a multivariate analysis of variance, it is the multivariate analog of homogeneity of variance.  
+
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+box_m(data[, c("weight", "height")], data$Diet)
+```
+|     From above output by *Box's M-test*, we can say that observed covariance matrices for the *weight* and *height* are equal across groups.  
+
+\pagebreak
+## Homogneity of variance assumption
+|       For each of the outcome variables, the one-way MANOVA assumes that there are 
+equal variances between groups. This can be checked using the Levene's test of 
+equality of variances. Key R function: levene_test() [rstatix package].  
+
+|   The *null hypothesis* for Levene's is that the variances are equal across all groups, here we can see for Diets,  
+
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+data %>% 
+        gather(key = "variable", value = "value", weight,height) %>%
+        group_by(variable) %>% 
+        levene_test(value ~ factor(Diet))
+```
+
+|      The results are in favor of null hypothesis of test, i.e. we can say that variance for each diet groups is same.  
+
+|   All assumptions for *MANOVA* are satisfied, So now by using *MANOVA* we can check simultaneously effect of *Diet* on *weight and height*.  
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+model <- lm(cbind(weight,height) ~ factor(Diet), data)
+library(car)
+fit <- Manova(model, test.statistic = "Pillai")
+summary(fit)
+```
+
+|     Which Shows there is a statistically significant difference between the *Diet* on the combined dependent variables i.e. on *weight* and *height.*  
+
+
+## Computing multiple pairwise comparisons
+A statistically significant univariate ANOVA can be followed up by multiple pairwise comparisons to determine which groups are different. 
+
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+pwc <- data %>%
+  gather(key = "variables", value = "value", weight, height) %>%
+  group_by(variables) %>%
+  games_howell_test(value ~ Diet) %>%
+  select(-estimate, -conf.low, -conf.high) # Remove details
+pwc
+```
+|     From results we see that for mean weight for All pairwise (Diet) comparisons are significant, i.e. they are not similar. But for mean height only Diet pair *2-3* and *3-4* are significant.  
+
+\pagebreak
+\Large
+# Conclusion  
+
+- From graphs, we see that Weight and Height are following the same pattern for different Diets.  
+
+- Diet 1 and Diet 2 are showing identical effects in gaining Weight and Height over time.  
+
+- The chicks which will be used for food purposes are gaining more weight as compared to others over time.  
+
+- Diet 4 has the worst results for gaining Weight and Height over time as compared to others.  
+
+- ANOVA shows that the mean Weight and Height for each Diet combination are significantly different.  
+
+- The effect of Weight and Height is not much dependent on the species.  
+
+- Female Chicks are gaining more Weight and Height as compared to Male Chicks over days.
+
+- Diet 3 is showing positive results on the overall growth of Poultry Chicks.  
+
+- We can forecast a few days ahead of Weight and Height if we keep all these procedures same for the few days.  
+
+- Effect of Diet on mean Weight and height together is significantly different from others.
+  
+
+\pagebreak  
+
+# Limitations  
+
+- This study is Conducted for only 4 Species and only 4 Diets, for other Diets and Species Results may be different.  
+
+- This study was done for only one poultry farm.  
+
+- We check this effect for only one season (winter), so for different Seasons, the results can be changed.  
+
+- The base food plan for all chicks was the same, but if we change this base food plan the results can be different.  
+
+- Due to the cost of the experiment, the sample size was moderate.  
+
+- This study was conducted for only 24 days for future days the result can be a different.  
+
+\pagebreak
+
+
+\Large
+# References
+
+- **R In Action** Data Analysis and Graphics with R By *Robert l. Kabacoff*.  
+
+
+- **R For Data Science** By *Hadley wickham & Garrett Grolemund*.  
+
+- **Design and Analysis of Experiments Book**  
+ By *Douglas C. Montgomery*.  
+ 
+- **Time Series Analysis and Its Applications: With R Examples (Springer Texts in Statistics) 4th ed. 2017 Edition**  
+ By *Robert H. Shumway, David S. Stoffer.*  
+
+- **Practical Time Series Forecasting with R: A Hands-On Guide [2nd Edition] (Practical Analytics) Paperback – July 19, 2016**
+ By *Galit Shmueli, Kenneth C. Lichtendahl Jr.*  
+ 
+- **One-Way ANOVA Test in R Blog:** (http://www.sthda.com/english/wiki/one-way-anova-test-in-r).
+ 
+- **Manova Blog** (https://www.datanovia.com/en/lessons/one-way-manova-in-r/#:~:text=of%20Wilks'%20statistic.-,  
+ Check%20the%20homogneity%20of%20variance%20assumption,  
+ levene_test()%20%5Brstatix%20package%5D.).  
+
+\pagebreak
+\Large
+# Appendix  
+
+- https://github.com/nameissaurabh/Poultry_Chick_pg_project  
+
+
+
+- https://github.com/SamDhikale/Poultry_Chicks_Diet_PG_Project  
+
+
+
+
+\pagebreak
+
+![Happy]("C:/Users/Admin/Desktop/MSC_Project/Poultry_New/final/happy.jpg")
+![Thank You]("C:/Users/Admin/Desktop/MSC_Project/Poultry_New/final/TU.jpg")
+
+
+
+
+
